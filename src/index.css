@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-mono: 'Fira Code', 'Menlo', monospace;
+
+  --color-canvas: #ffffff;
+  --color-surface-1: #f4f5f8;
+  --color-surface-2: #e9ecf1;
+  --color-surface-3: #dce0e8;
+  --color-surface-4: #cdd3dc;
+
+  --color-accent: #0d9373;
+  --color-accent-bright: #00b894;
+
+  --color-border: #e2e5eb;
+  --color-border-mid: #d0d5de;
+  --color-border-strong: #b8bfcc;
+
+  --color-txt: #1a1f2e;
+  --color-txt-2: #505a6e;
+  --color-txt-3: #8a95a8;
+
+  --color-layer-attn: #0369a1;
+  --color-layer-mlp: #047857;
+  --color-layer-norm: #b45309;
+  --color-layer-embed: #6d28d9;
+  --color-layer-head: #b91c1c;
+  --color-layer-vision: #c2410c;
+}
+
+/* ── Base ────────────────────────────────────────── */
+
+html {
+  background: var(--color-canvas);
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-display);
+  background-image:
+    radial-gradient(circle, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom scrollbar ────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
+/* ── Animations ──────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes gradient-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── Utility classes ─────────────────────────────── */
+
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+
+.animate-gradient-flow {
+  background-size: 300% 100%;
+  animation: gradient-flow 6s ease infinite;
+}
+
+/* Card */
+.card {
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-mid);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+/* Glow ring on focus */
+.glow-focus:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.12), 0 0 16px rgba(13, 147, 115, 0.06);
+}
+
+/* Accent gradient line */
+.accent-line {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(13, 147, 115, 0.2) 15%,
+    rgba(13, 147, 115, 0.7) 50%,
+    rgba(13, 147, 115, 0.2) 85%,
+    transparent 100%
+  );
+}
+
+/* Panel surface */
+.panel {
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Badge base */
+.badge {
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(13, 147, 115, 0.18);
+  color: inherit;
+}
