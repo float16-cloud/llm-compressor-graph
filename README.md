@@ -1,73 +1,105 @@
-# React + TypeScript + Vite
+![LLM Compressor Graph](git-content/ex1.png)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# LLM Compressor Graph
 
-Currently, two official plugins are available:
+A browser-based interactive tool for **visualizing LLM architecture** and **generating quantization ignore lists** for [llm-compressor](https://github.com/vllm-project/llm-compressor). Fully client-side — no backend needed. Fetches model data directly from the Hugging Face Hub.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🌐 **[Try it online](https://llm-graph.float16.cloud)** — No installation required!
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🔍 Load any Hugging Face model** — Enter any model ID (e.g., `meta-llama/Llama-3.1-8B`) and visualize its architecture instantly
+  - Parses `model.safetensors.index.json` for exact layer structure
+  - Falls back to `config.json` for known architectures (Llama, Qwen, Mistral, Phi3, GPT-NeoX, etc.)
+  - Supports multimodal/vision-language models (detects vision encoders)
+  - Supports hybrid attention models (e.g., Qwen3-Next with DeltaNet + full attention)
 
-## Expanding the ESLint configuration
+- **🌲 Hierarchical architecture tree** — Color-coded, collapsible tree view of all model modules
+  - Layer type badges: Attention (blue), MLP (green), Norm (amber), Embedding (purple), Head (red), Vision (orange)
+  - Per-module parameter counts (fetched via HTTP Range requests on safetensors headers)
+  - Two sort orders: "Weight file" (original) or "Forward pass" (embedding → layers → head)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **🎯 Smart selection tools**
+  - Select/deselect by layer type (All Attention, All MLP, All Norms, All Vision)
+  - Layer range selector (layers N through M)
+  - **Auto-ignore presets**: Aggressive (most compression), Balanced (recommended), Conservative (best quality)
+  - Checkbox tri-state with group selection
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **📋 Output generation**
+  - **Ignore List**: Plain Python `ignore=[...]` list
+  - **Full Recipe**: Complete `llm-compressor` Python code snippet with:
+    - Configurable modifier: GPTQ, QuantizationModifier, SmoothQuant
+    - Configurable scheme: W4A16, W8A16, FP8, FP8_BLOCK
+    - Optional KV cache quantization (FP8/INT8, per-tensor/per-head)
+  - **Regex optimization**: Collapses repeated layer patterns (e.g., `re:model\.layers\.\d+\.mlp\.gate_proj`)
+  - Editable output with Apply/Reset
+  - One-click copy to clipboard
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **📊 Size estimation**
+  - KV cache memory estimates at 32k/64k/128k context lengths (FP16 and FP8)
+  - Quantized model size estimates (FP16, W8A16, W4A16) accounting for ignored layers
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **💾 Export**
+  - Export architecture tree as high-DPI PNG (2x resolution) with model name header
+
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**No backend or environment variables needed.** The app runs entirely in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tech Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **React 19** with TypeScript
+- **Vite 7** for build tooling
+- **Tailwind CSS 4** for styling
+- **Zustand** for state management
+- **html-to-image** for PNG export
+
+## 🤝 Contributing
+
+We welcome contributions! This is an open source project.
+
+### How to contribute
+
+1. **Fork** the repository
+2. **Create a branch** for your feature (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to your branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+### Ideas for contributions
+
+- Support for additional model architectures
+- More auto-ignore presets based on empirical research
+- UI/UX improvements
+- Performance optimizations
+- Bug fixes
+
+**Issues and feature requests welcome!** Check out the [GitHub Issues](https://github.com/float16-cloud/llm-compressor-graph/issues).
+
+## 🔗 Links
+
+- **GitHub**: [float16-cloud/llm-compressor-graph](https://github.com/float16-cloud/llm-compressor-graph)
+- **llm-compressor**: [vllm-project/llm-compressor](https://github.com/vllm-project/llm-compressor)
+- **vLLM**: [vllm-project/vllm](https://github.com/vllm-project/vllm)
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with 💚 by the [float16.cloud](https://github.com/float16-cloud) team

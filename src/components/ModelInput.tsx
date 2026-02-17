@@ -1,11 +1,10 @@
 import { useState } from 'react';
 
 const EXAMPLE_MODELS = [
-  'typhoon-ai/typhoon-ocr1.5-2b',
-  'meta-llama/Llama-3.1-8B',
-  'Qwen/Qwen2.5-7B',
-  'mistralai/Mistral-7B-v0.3',
-  'microsoft/Phi-3-mini-4k-instruct',
+  'Qwen/Qwen3.5-397B-A17B',
+  'zai-org/GLM-5',
+  'openai/gpt-oss-120b',
+  'mistralai/Ministral-3-8B-Instruct-2512',
 ];
 
 interface ModelInputProps {

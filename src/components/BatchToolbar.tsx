@@ -47,17 +47,32 @@ interface BatchToolbarProps {
   maxLayerIndex: number;
   sortOrder: 'weight-file' | 'forward-pass';
   onSortOrderChange: (order: 'weight-file' | 'forward-pass') => void;
+  onExportPng?: () => Promise<void>;
+  modelId?: string;
 }
 
-export function BatchToolbar({ maxLayerIndex, sortOrder, onSortOrderChange }: BatchToolbarProps) {
+export function BatchToolbar({ maxLayerIndex, sortOrder, onSortOrderChange, onExportPng, modelId }: BatchToolbarProps) {
   const { selectAll, deselectAll, invertSelection, selectByPattern, selectRange, setSelectedPaths, allSelectablePaths } = useSelectionStore();
   const [rangeStart, setRangeStart] = useState(0);
   const [rangeEnd, setRangeEnd] = useState(maxLayerIndex);
+  const [exporting, setExporting] = useState(false);
 
   const handleAutoIgnore = useCallback((stage: 1 | 2 | 3) => {
     const paths = computeAutoIgnore(allSelectablePaths, maxLayerIndex, stage);
     setSelectedPaths(paths);
   }, [allSelectablePaths, maxLayerIndex, setSelectedPaths]);
+
+  const handleExportPng = useCallback(async () => {
+    if (!onExportPng || exporting) return;
+    setExporting(true);
+    try {
+      await onExportPng();
+    } catch (err) {
+      console.error('PNG export failed:', err);
+    } finally {
+      setExporting(false);
+    }
+  }, [onExportPng, exporting]);
 
   // Update range end when maxLayerIndex changes
   if (rangeEnd > maxLayerIndex) {
@@ -128,6 +143,33 @@ export function BatchToolbar({ maxLayerIndex, sortOrder, onSortOrderChange }: Ba
         <button onClick={invertSelection} className="px-3 py-1.5 text-xs bg-surface-2 text-txt-2 border border-border rounded-lg hover:bg-surface-3 hover:text-txt transition-all duration-200 cursor-pointer">
           Invert
         </button>
+
+        {/* Export PNG button */}
+        {onExportPng && (
+          <button
+            onClick={handleExportPng}
+            disabled={exporting}
+            className="px-3 py-1.5 text-xs bg-surface-2 text-txt-2 border border-border rounded-lg hover:bg-surface-3 hover:text-txt transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ml-auto"
+            title={modelId ? `Export ${modelId} architecture tree as PNG` : 'Export architecture tree as PNG'}
+          >
+            {exporting ? (
+              <span className="flex items-center gap-1.5">
+                <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Exporting...
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                  <path d="M14 10v3a1 1 0 01-1 1H3a1 1 0 01-1-1v-3M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Save PNG{modelId ? ` (${modelId.split('/').pop()})` : ''}
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Auto-ignore presets */}
